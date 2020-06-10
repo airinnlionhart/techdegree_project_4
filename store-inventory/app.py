@@ -112,7 +112,10 @@ def menu_loop():
                     view_all_products()
                     break
         elif choice == 'b':
-            pass
+            results = get_all_products()
+            with open("product_table_backup.csv", "a") as a_file:
+                for element in results:
+                    a_file.write(element+'\n')
         elif choice == 'q':
             break
         else:
@@ -129,6 +132,15 @@ def view_all_products():
 
     for entries in query:
         print(entries.product_id, entries.product_name, entries.product_quantity, entries.product_price, entries.date_updated)
+
+
+def get_all_products():
+    backup_database_list = []
+    query = Product.select()
+    for entries in query:
+        backup_database_list.append(str(entries.product_id) + ', ' + str(entries.product_name) +', '+ str(entries.product_quantity) +', '+
+                                    str(entries.product_price) +', ' + str(entries.date_updated))
+    return backup_database_list
 
 
 def delete_product(product_id):
