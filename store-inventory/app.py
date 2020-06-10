@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 from collections import OrderedDict
 import datetime
-import sys
-import os
 import csv
 from sqlite3 import IntegrityError
 
@@ -15,7 +13,7 @@ class Product(Model):
     product_name = TextField(unique=True)
     product_quantity = IntegerField()
     product_price = IntegerField()
-    date_updated = DateTimeField(default=datetime.datetime.now)
+    date_updated = DateTimeField(default=datetime.datetime.now())
 
     class Meta:
         database = db
@@ -76,44 +74,51 @@ def menu_loop():
         choice = input('Please select a letter choice: ').lower().strip()
 
         if choice == 'a':
+            product = input("Please enter a product name: ")
             while True:
-                product = input("Please enter a product name: ")
-                quanity = int(input("Enter the number of products"))
-                price = int(input("cost in cents"))
+                try:
+                    quanity = int(input("Enter the number of products: "))
+                    break
+                except ValueError:
+                    print("Doesnt look like a whole number try again:")
+            while True:
+                try:
+                    price = int(input("Enter the cost in cents so if its $1.45 its 145: "))
+                    break
+                except ValueError:
+                    print("Doesnt look like a whole number try again: ")
+            while True:
                 try:
                     add_to_database({'product_name': product, "product_quantity": quanity, "product_price":price})
                     break
                 except:
                     print("Something doesnt seem right please try again")
         elif choice == 'v':
-            view_option = input('enter the id you would like to see or hit enter to see all: ')
             while True:
+                view_option = input('enter the id you would like to see or hit enter to see all: ')
                 try:
                     view_product(Product.get(product_id=int(view_option)))
                     break
                 except ValueError:
                     view_all_products()
-                    break
                 except:
-                    print("This index is not in the table")
                     view_all_products()
-                    break
+                    print("This index is not in the table")
         elif choice == 'd':
-            delete_option = input('enter the id of the item you would like to delete: ')
             while True:
+                delete_option = input('enter the id of the item you would like to delete: ')
                 try:
                     delete_product(Product.get(product_id=int(delete_option)))
                     break
                 except ValueError:
                     view_all_products()
-                    break
-                except:
                     print("This index is not in the table")
+                except:
                     view_all_products()
-                    break
+                    print("This index is not in the table")
         elif choice == 'b':
             results = get_all_products()
-            with open("product_table_backup.csv", "a") as a_file:
+            with open("product_table_backup.csv", "w") as a_file:
                 for element in results:
                     a_file.write(element+'\n')
         elif choice == 'q':
